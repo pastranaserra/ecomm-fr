@@ -28,3 +28,33 @@ export const logIn = async ({ email, password }) => {
     throw e;
   }
 };
+
+let reqInterceptor = null;
+let resInterceptor = null;
+
+export const setAuthHeader = (token, onInvalidToken) => {
+  if (!token) return;
+  removeAuthHeader();
+  reqInterceptor = apiClient.interceptors.request.use((config) => {
+    config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  });
+  resInterceptor = apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response.status === 401) onInvalidToken();
+      return Promise.reject(error);
+    },
+  );
+};
+
+export const removeAuthHeader = () => {
+  if (reqInterceptor) {
+    apiClient.interceptors.request.eject(reqInterceptor);
+    reqInterceptor = null;
+  }
+  if (resInterceptor) {
+    apiClient.interceptors.response.eject(resInterceptor);
+    resInterceptor = null;
+  }
+};
