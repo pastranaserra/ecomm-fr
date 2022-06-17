@@ -60,11 +60,11 @@ export const setAuthHeader = (token, onInvalidToken) => {
 };
 
 export const removeAuthHeader = () => {
-  if (reqInterceptor) {
+  if (reqInterceptor != null) {
     apiClient.interceptors.request.eject(reqInterceptor);
     reqInterceptor = null;
   }
-  if (resInterceptor) {
+  if (resInterceptor != null) {
     apiClient.interceptors.response.eject(resInterceptor);
     resInterceptor = null;
   }
