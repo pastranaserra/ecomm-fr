@@ -46,26 +46,10 @@ const genderPages = [
 
 export default function NavBar() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user, logOut } = useAuthContext();
 
   const [anchorElGenderMenu, setAnchorElGenderMenu] = useState(null);
-  const [anchorElAccountMenu, setAnchorElAccountMenu] = useState(null);
-  const [loginFormIsVisible, setLoginFormIsVisible] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      setLoginFormIsVisible(false);
-    }
-  }, [user]);
-
-  const userIsLoggedIn = Boolean(user);
-
-  const showSignUpButton = location.pathname !== signUpRoute;
-  const showProfileButton = location.pathname !== profileRoute;
 
   const genderMenuIsVisible = Boolean(anchorElGenderMenu);
-  const accountMenuIsVisible = Boolean(anchorElAccountMenu);
 
   const openGenderMenu = (event) => {
     setAnchorElGenderMenu(event.currentTarget);
@@ -75,18 +59,30 @@ export default function NavBar() {
     setAnchorElGenderMenu(null);
   };
 
-  const openAccountMenu = (event) => {
-    setAnchorElAccountMenu(event.currentTarget);
-  };
-
-  const closeAccountMenu = () => {
-    setAnchorElAccountMenu(null);
-  };
-
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: 'none', sm: 'flex' },
+            }}
+          >
+            <Logo />
+            <Box sx={{ flexGrow: 1 }}></Box>
+            {genderPages.map((page) => (
+              <Button
+                key={page.label}
+                color="inherit"
+                onClick={() => navigate(page.route)}
+              >
+                {page.label}
+              </Button>
+            ))}
+            <Box sx={{ flexGrow: 1 }}></Box>
+            <AccountButton />
+          </Box>
           <Box
             sx={{
               flexGrow: 1,
@@ -144,110 +140,7 @@ export default function NavBar() {
             >
               <Logo />
             </Box>
-            <Box sx={{ display: 'flex', flexGrow: 0 }}>
-              <Tooltip title="Account">
-                <IconButton
-                  size="large"
-                  aria-label="Account"
-                  aria-controls="account-menu"
-                  aria-haspopup="true"
-                  onClick={openAccountMenu}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                id="account-menu"
-                anchorEl={anchorElAccountMenu}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={accountMenuIsVisible}
-                onClose={closeAccountMenu}
-              >
-                {userIsLoggedIn ? (
-                  <Box>
-                    {showProfileButton && (
-                      <MenuItem
-                        onClick={() => {
-                          closeAccountMenu();
-                          navigate(profileRoute);
-                        }}
-                      >
-                        <ListItemIcon>
-                          <Person fontSize="small" />
-                        </ListItemIcon>
-                        <Typography textAlign="center">Perfil</Typography>
-                      </MenuItem>
-                    )}
-                    <MenuItem
-                      onClick={() => {
-                        closeAccountMenu();
-                        logOut();
-                      }}
-                    >
-                      <ListItemIcon>
-                        <Logout fontSize="small" />
-                      </ListItemIcon>
-                      <Typography textAlign="center">Cerrar Sesión</Typography>
-                    </MenuItem>
-                  </Box>
-                ) : (
-                  <Box>
-                    <MenuItem
-                      onClick={() => {
-                        closeAccountMenu();
-                        setLoginFormIsVisible(true);
-                      }}
-                    >
-                      <ListItemIcon>
-                        <Login fontSize="small" />
-                      </ListItemIcon>
-                      <Typography textAlign="center">Iniciar Sesión</Typography>
-                    </MenuItem>
-                    <Dialog
-                      fullScreen
-                      open={loginFormIsVisible}
-                      onClose={() => setLoginFormIsVisible(false)}
-                    >
-                      <AppBar sx={{ position: 'relative' }}>
-                        <Toolbar>
-                          <Box sx={{ flex: 1 }} />
-                          <IconButton
-                            color="inherit"
-                            onClick={() => setLoginFormIsVisible(false)}
-                            aria-label="close"
-                          >
-                            <CloseIcon />
-                          </IconButton>
-                        </Toolbar>
-                      </AppBar>
-                      <LoginForm />
-                    </Dialog>
-                    {showSignUpButton && (
-                      <MenuItem
-                        onClick={() => {
-                          closeAccountMenu();
-                          navigate(signUpRoute);
-                        }}
-                      >
-                        <ListItemIcon>
-                          <PersonAdd fontSize="small" />
-                        </ListItemIcon>
-                        <Typography textAlign="center">Registrarse</Typography>
-                      </MenuItem>
-                    )}
-                  </Box>
-                )}
-              </Menu>
-            </Box>
+            <AccountButton />
           </Box>
         </Toolbar>
       </Container>
@@ -261,5 +154,140 @@ function Logo() {
     <Button onClick={() => navigate('/')} color="inherit">
       Home
     </Button>
+  );
+}
+
+function AccountButton() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logOut } = useAuthContext();
+
+  const [anchorElAccountMenu, setAnchorElAccountMenu] = useState(null);
+  const [loginFormIsVisible, setLoginFormIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (user) setLoginFormIsVisible(false);
+  }, [user]);
+
+  const userIsLoggedIn = Boolean(user);
+
+  const showSignUpButton = location.pathname !== signUpRoute;
+  const showProfileButton = location.pathname !== profileRoute;
+
+  const accountMenuIsVisible = Boolean(anchorElAccountMenu);
+
+  const openAccountMenu = (event) => {
+    setAnchorElAccountMenu(event.currentTarget);
+  };
+
+  const closeAccountMenu = () => {
+    setAnchorElAccountMenu(null);
+  };
+
+  return (
+    <Box sx={{ display: 'flex', flexGrow: 0 }}>
+      <Tooltip title="Account">
+        <IconButton
+          size="large"
+          aria-label="Account"
+          aria-controls="account-menu"
+          aria-haspopup="true"
+          onClick={openAccountMenu}
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton>
+      </Tooltip>
+      <Menu
+        id="account-menu"
+        anchorEl={anchorElAccountMenu}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={accountMenuIsVisible}
+        onClose={closeAccountMenu}
+      >
+        {userIsLoggedIn ? (
+          <Box>
+            {showProfileButton && (
+              <MenuItem
+                onClick={() => {
+                  closeAccountMenu();
+                  navigate(profileRoute);
+                }}
+              >
+                <ListItemIcon>
+                  <Person fontSize="small" />
+                </ListItemIcon>
+                <Typography textAlign="center">Perfil</Typography>
+              </MenuItem>
+            )}
+            <MenuItem
+              onClick={() => {
+                closeAccountMenu();
+                logOut();
+              }}
+            >
+              <ListItemIcon>
+                <Logout fontSize="small" />
+              </ListItemIcon>
+              <Typography textAlign="center">Cerrar Sesión</Typography>
+            </MenuItem>
+          </Box>
+        ) : (
+          <Box>
+            <MenuItem
+              onClick={() => {
+                closeAccountMenu();
+                setLoginFormIsVisible(true);
+              }}
+            >
+              <ListItemIcon>
+                <Login fontSize="small" />
+              </ListItemIcon>
+              <Typography textAlign="center">Iniciar Sesión</Typography>
+            </MenuItem>
+            <Dialog
+              fullScreen
+              open={loginFormIsVisible}
+              onClose={() => setLoginFormIsVisible(false)}
+            >
+              <AppBar sx={{ position: 'relative' }}>
+                <Toolbar>
+                  <Box sx={{ flex: 1 }} />
+                  <IconButton
+                    color="inherit"
+                    onClick={() => setLoginFormIsVisible(false)}
+                    aria-label="close"
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Toolbar>
+              </AppBar>
+              <LoginForm />
+            </Dialog>
+            {showSignUpButton && (
+              <MenuItem
+                onClick={() => {
+                  closeAccountMenu();
+                  navigate(signUpRoute);
+                }}
+              >
+                <ListItemIcon>
+                  <PersonAdd fontSize="small" />
+                </ListItemIcon>
+                <Typography textAlign="center">Registrarse</Typography>
+              </MenuItem>
+            )}
+          </Box>
+        )}
+      </Menu>
+    </Box>
   );
 }
