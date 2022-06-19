@@ -17,8 +17,10 @@ import {
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import CloseIcon from '@mui/icons-material/Close';
+import FemaleIcon from '@mui/icons-material/Female';
 import Login from '@mui/icons-material/Login';
 import Logout from '@mui/icons-material/Logout';
+import MaleIcon from '@mui/icons-material/Male';
 import MenuIcon from '@mui/icons-material/Menu';
 import Person from '@mui/icons-material/Person';
 import PersonAdd from '@mui/icons-material/PersonAdd';
@@ -33,10 +35,12 @@ const genderPages = [
   {
     label: 'Mujer',
     route: '/women',
+    icon: <FemaleIcon fontSize="small" />,
   },
   {
     label: 'Hombre',
     route: '/men',
+    icon: <MaleIcon fontSize="small" />,
   },
 ];
 
@@ -125,6 +129,7 @@ export default function NavBar() {
                       navigate(page.route);
                     }}
                   >
+                    <ListItemIcon>{page.icon}</ListItemIcon>
                     <Typography textAlign="center">{page.label}</Typography>
                   </MenuItem>
                 ))}
