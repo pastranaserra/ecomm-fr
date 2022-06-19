@@ -14,6 +14,8 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import CloseIcon from '@mui/icons-material/Close';
@@ -162,6 +164,9 @@ function AccountButton() {
   const location = useLocation();
   const { user, logOut } = useAuthContext();
 
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [anchorElAccountMenu, setAnchorElAccountMenu] = useState(null);
   const [loginFormIsVisible, setLoginFormIsVisible] = useState(false);
 
@@ -254,22 +259,24 @@ function AccountButton() {
               <Typography textAlign="center">Iniciar Sesión</Typography>
             </MenuItem>
             <Dialog
-              fullScreen
+              fullScreen={fullScreen}
               open={loginFormIsVisible}
               onClose={() => setLoginFormIsVisible(false)}
             >
-              <AppBar sx={{ position: 'relative' }}>
-                <Toolbar>
-                  <Box sx={{ flex: 1 }} />
-                  <IconButton
-                    color="inherit"
-                    onClick={() => setLoginFormIsVisible(false)}
-                    aria-label="close"
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </Toolbar>
-              </AppBar>
+              {fullScreen && (
+                <AppBar sx={{ position: 'relative' }}>
+                  <Toolbar>
+                    <Box sx={{ flex: 1 }} />
+                    <IconButton
+                      color="inherit"
+                      onClick={() => setLoginFormIsVisible(false)}
+                      aria-label="close"
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  </Toolbar>
+                </AppBar>
+              )}
               <LoginForm />
             </Dialog>
             {showSignUpButton && (
